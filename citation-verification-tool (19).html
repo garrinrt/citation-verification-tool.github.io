@@ -1,0 +1,2531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Citation Verification Tool</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2214%22%20fill%3D%22%233E6B65%22/%3E%3Cline%20x1%3D%2218%22%20y1%3D%2224%22%20x2%3D%2246%22%20y2%3D%2224%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%2218%22%20y1%3D%2234%22%20x2%3D%2238%22%20y2%3D%2234%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2244%22%20width%3D%2228%22%20height%3D%226%22%20rx%3D%223%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-opacity%3D%220.45%22%20stroke-width%3D%221.5%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2244%22%20width%3D%2219%22%20height%3D%226%22%20rx%3D%223%22%20fill%3D%22%23FFFFFF%22/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg: #FAFAF9;
+    --surface: #FFFFFF;
+    --sunken: #F2F1EE;
+    --border: #E4E3DE;
+    --border-strong: #D6D4CC;
+    --ink: #16181D;
+    --ink-soft: #52565E;
+    --muted: #6C6F66;
+    --accent: #3E6B65;
+    --accent-dark: #2C4E49;
+    --accent-soft: rgba(62,107,101,0.08);
+    --danger: #C3403B;
+    --danger-soft: rgba(195,64,59,0.07);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(20,20,15,0.05), 0 1px 3px rgba(20,20,15,0.06);
+    --shadow-md: 0 6px 16px rgba(20,20,15,0.08), 0 2px 5px rgba(20,20,15,0.05);
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: "Source Serif Pro", Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Consolas, monospace;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    padding: 48px 20px 80px;
+  }
+
+  .wrap{ max-width: 720px; margin: 0 auto; }
+
+  header{ margin-bottom: 36px; }
+
+  .brand-mark{
+    display: flex;
+    justify-content: center;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+
+  h1{
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .sub{
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    line-height: 1.6;
+    max-width: 54ch;
+  }
+
+  .sub-callout{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--danger-soft);
+    border: 1px solid rgba(195,64,59,0.18);
+    border-left: 3px solid var(--danger);
+    border-radius: var(--radius-md);
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    text-align: left;
+  }
+  .sub-callout-row{
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    column-gap: 10px;
+    align-items: start;
+  }
+  .sub-callout-row svg{
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    color: var(--danger);
+  }
+  .sub-callout-row p{
+    margin: 0;
+  }
+
+  .home-header{
+    text-align: center;
+  }
+  .home-header .sub{
+    margin: 0 auto;
+  }
+  .home-header .sub-callout{
+    margin-top: 18px;
+    text-align: left;
+  }
+
+  .about-bridge{
+    margin: 12px 0 0;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .about-bridge button{
+    font: inherit;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .about-bridge button:hover{
+    color: var(--danger);
+    background: none;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .home-cards-section{
+    margin-top: 44px;
+  }
+  .home-cards-section .section-divider{
+    margin-top: 0;
+  }
+
+  .about-tool{
+    margin-top: 32px;
+    scroll-margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .about-tool summary{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 15px 18px;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .about-tool summary::-webkit-details-marker{ display: none; }
+  .about-tool summary:hover{ color: var(--accent-dark); }
+  .about-tool summary:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    border-radius: var(--radius-md);
+  }
+  .about-chevron{
+    flex-shrink: 0;
+    color: var(--muted);
+    transition: transform 0.18s ease;
+  }
+  .about-tool[open] .about-chevron{ transform: rotate(180deg); }
+  .about-body{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 4px 18px 20px;
+  }
+  .about-col h4{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .about-is h4{ color: var(--accent-dark); }
+  .about-isnot h4{ color: var(--danger); }
+  .about-col ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .about-col li{
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .about-col li::before{
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 700;
+  }
+  .about-is li::before{ content: "✓"; color: var(--accent); }
+  .about-isnot li::before{ content: "✕"; color: var(--danger); }
+
+  form{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 28px 28px 26px;
+    position: relative;
+  }
+
+  .field{ margin-bottom: 18px; }
+  .field label{
+    display:block;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    margin-bottom: 7px;
+  }
+  .field .hint{
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 7px;
+    letter-spacing: 0;
+  }
+
+  input[type=text]{
+    width:100%;
+    font-family: var(--sans);
+    font-size: 15px;
+    padding: 11px 13px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  input[type=text]:focus{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  input[type=text]::placeholder{ color: var(--muted); }
+
+  textarea#pasteBox{
+    width:100%;
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    padding: 12px 13px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  textarea#pasteBox:focus{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  textarea#pasteBox::placeholder{ color: var(--muted); }
+
+  .paste-caveat{
+    display:flex;
+    align-items:flex-start;
+    gap: 10px;
+    margin-top: 13px;
+    padding: 12px 14px;
+    background: var(--danger-soft);
+    border: 1px solid rgba(195,64,59,0.18);
+    border-left: 3px solid var(--danger);
+    border-radius: var(--radius-md);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .paste-caveat-ico{
+    flex-shrink: 0;
+    color: var(--danger);
+    margin-top: 1px;
+  }
+
+  .callout-note{
+    display:flex;
+    align-items:flex-start;
+    gap: 10px;
+    margin-top: 22px;
+    padding: 13px 15px;
+    background: var(--danger-soft);
+    border: 1px solid rgba(195,64,59,0.18);
+    border-left: 3px solid var(--danger);
+    border-radius: var(--radius-md);
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .callout-note-ico{
+    flex-shrink: 0;
+    color: var(--danger);
+    margin-top: 1px;
+  }
+
+  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  .actions{
+    margin-top: 22px;
+    display:flex;
+    align-items:center;
+    gap: 14px;
+  }
+
+  button{
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0;
+    background: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 20px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  button:hover{
+    background: var(--accent-dark);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+  button:disabled{
+    background: var(--border-strong);
+    color: var(--ink-soft);
+    box-shadow: none;
+    cursor: default;
+    transform: none;
+  }
+
+  .status{
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--muted);
+    min-height: 16px;
+  }
+
+  #results{ margin-top: 34px; display:flex; flex-direction:column; gap: 18px; }
+
+  .filter-bar{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 24px;
+    margin-bottom: 4px;
+    scroll-margin-top: 24px;
+  }
+  .filter-row{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .filter-input{
+    flex: 1;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    padding: 10px 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .filter-input:focus{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .filter-input::placeholder{ color: var(--muted); }
+  .filter-count{
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .filter-tip{
+    font-family: var(--sans);
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .filter-tip code{
+    color: var(--accent-dark);
+    font-family: var(--mono);
+    background: var(--accent-soft);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .interp-guide{
+    background: var(--sunken);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 16px 19px;
+    margin-bottom: 20px;
+  }
+  .interp-guide h3{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    margin: 0 0 11px;
+  }
+  .interp-guide .g-row{
+    display: flex;
+    gap: 12px;
+    padding: 5px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .interp-guide .g-term{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-dark);
+    min-width: 152px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .see-more-wrap{ margin-top: 16px; }
+  .see-more-btn{
+    width: 100%;
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--accent-dark);
+    border: 1.5px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: none;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .see-more-btn:hover{
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: none;
+    transform: none;
+  }
+  .lower-ranked-label{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 6px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .lower-ranked-label::before, .lower-ranked-label::after{
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .card.lower-ranked{ opacity: 0.88; }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 22px 24px;
+    position: relative;
+  }
+
+  .card .tag{
+    position:absolute;
+    top: 14px; right: 14px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 4px 10px;
+    color: #FFFFFF;
+  }
+  .tag.match-low{ background: var(--danger); left: 14px; right: auto !important; }
+  .tag.source{ background: var(--ink); }
+
+  .card h2{
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    margin: 4px 78px 12px 0;
+    line-height: 1.35;
+  }
+
+  .meta-row{
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+    display:flex;
+    gap: 8px;
+  }
+  .meta-row .k{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    min-width: 88px;
+    padding-top: 1px;
+  }
+
+  .match-bar{
+    flex: 1;
+    height: 5px;
+    max-width: 160px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+  .match-bar-fill{
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+  .match-bar-fill.weak{ background: var(--danger); }
+
+  .retraction-banner{
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin: 4px 0 14px;
+    padding: 11px 13px;
+    background: var(--danger);
+    border-radius: var(--radius-sm);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #FFFFFF;
+  }
+  .retraction-banner svg{ flex-shrink: 0; margin-top: 1px; }
+  .card.is-retracted{ border-color: var(--danger); }
+
+  .field-check{
+    margin-top: 15px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .field-check-head{
+    display: block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 9px;
+  }
+  .fc-row{
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    padding: 3px 0;
+    flex-wrap: wrap;
+  }
+  .fc-row svg{ align-self: center; flex-shrink: 0; }
+  .fc-row svg.fc-ok{ color: var(--accent); }
+  .fc-row svg.fc-no{ color: var(--danger); }
+  .fc-label{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    min-width: 60px;
+  }
+  .fc-found{ color: var(--ink); }
+  .fc-verdict{ font-size: 12px; }
+  .fc-verdict.fc-ok{ color: var(--accent-dark); }
+  .fc-verdict.fc-no{ color: var(--danger); font-weight: 500; }
+
+  .abstract{
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .abstract .k{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    display:block;
+    margin-bottom: 6px;
+  }
+
+  a.linkout{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top: 15px;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--accent-dark);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--accent);
+    padding-bottom: 1px;
+  }
+  a.linkout:hover{ color: var(--danger); border-color: var(--danger); }
+
+  .empty-note{
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+    background: var(--sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+  }
+  .empty-note a{ color: var(--accent-dark); }
+
+  .scholar-line{
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-md);
+    background: var(--sunken);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .scholar-line .scholar-ico{
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+  .scholar-line a{
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 1px;
+  }
+  .scholar-line a:hover{ color: var(--danger); border-bottom-color: var(--danger); }
+
+  .section-divider{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    margin: 52px 0 28px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .section-divider::before, .section-divider::after{
+    content:"";
+    flex:1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .toc-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px 26px 20px;
+  }
+  .toc-card h2{
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .toc-card .toc-sub{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .toc-entry{
+    display:flex;
+    gap: 16px;
+    padding: 13px 0;
+    border-top: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .toc-entry .page{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent-dark);
+    min-width: 64px;
+    flex-shrink: 0;
+  }
+  .toc-entry .toc-main{ flex: 1; }
+  .toc-entry .toc-title{
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.4;
+    margin: 0 0 4px;
+  }
+  .toc-entry .toc-title a{
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .toc-entry .toc-title a:hover{
+    color: var(--accent-dark);
+    border-bottom-color: var(--accent-dark);
+  }
+  .toc-entry .toc-authors{
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .view{ display: none; }
+
+  .view-nav{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .btn-secondary{
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 12.5px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .btn-secondary:hover{
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    border-color: var(--accent);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .home-cards{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .home-card{
+    display:flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px 22px 22px;
+    cursor: pointer;
+    font-family: var(--sans);
+    position: relative;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+  .home-card:hover{
+    background: var(--sunken);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+  .home-card:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .home-card-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    margin-bottom: 16px;
+  }
+
+  .home-card-tag{
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--accent-dark);
+    margin-bottom: 6px;
+  }
+  .home-card-title{
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 9px;
+  }
+  .home-card-desc{
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .home-card-arrow{
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--accent);
+    margin-top: 18px;
+    transition: transform 0.18s ease;
+  }
+  .home-card:hover .home-card-arrow{
+    transform: translateX(3px);
+  }
+
+  footer{
+    margin-top: 46px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  footer::before{
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    vertical-align: -2px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%233E6B65' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E") no-repeat center;
+  }
+
+  .copyright{
+    margin-top: 40px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px){
+    .home-cards{ grid-template-columns: 1fr; }
+    .about-body{ grid-template-columns: 1fr; gap: 20px; }
+  }
+
+  @media (max-width: 520px){
+    .row2{ grid-template-columns: 1fr; }
+    h1{ font-size: 26px; }
+    .toc-entry{ flex-direction: column; gap: 4px; }
+    .card h2{ margin-right: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <div id="homeScreen">
+    <header class="home-header">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="58" height="36" viewBox="0 0 70 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="6" y1="8" x2="52" y2="8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <line x1="6" y1="18" x2="36" y2="18" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <rect x="6" y="28" width="46" height="7" rx="3.5" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="6" y="28" width="30" height="7" rx="3.5" fill="currentColor"/>
+        </svg>
+      </div>
+      <h1>Citation Verification Tool</h1>
+      <p class="sub">This tool uses open scholarly indexes, such as CrossRef and OpenAlex, to help verify cited resources.</p>
+      <div class="sub-callout">
+        <div class="sub-callout-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <p>This is not to be assumed as a definitive tool, nor used to evaluate work. It is intended to help users locate and confirm cited resources.</p>
+        </div>
+        <div class="sub-callout-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p>Not finding a resource with this tool does not confirm the resource does not exist. It only confirms that the open scholarly indexes used in this tool did not locate it.</p>
+        </div>
+      </div>
+      <p class="about-bridge">More on <button type="button" id="aboutBridgeBtn">what this tool can and can't do</button> below.</p>
+    </header>
+
+    <section class="home-cards-section" aria-label="Choose a search type">
+      <div class="section-divider">Choose a search type</div>
+      <div class="home-cards">
+        <button type="button" class="home-card" id="goTitle">
+          <span class="home-card-icon" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+          </span>
+          <span class="home-card-tag">Verify by title</span>
+          <span class="home-card-title">Title Search</span>
+          <span class="home-card-desc">This confirms the verbatim published title and journal for a specific work, and provides a link or abstract.</span>
+          <span class="home-card-arrow">→</span>
+        </button>
+        <button type="button" class="home-card" id="goToc">
+          <span class="home-card-icon" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 4.5-9 4.5-9-4.5Z"/><path d="m3 12.5 9 4.5 9-4.5"/><path d="m3 17 9 4.5 9-4.5"/></svg>
+          </span>
+          <span class="home-card-tag">Verify by journal</span>
+          <span class="home-card-title">Journal Search</span>
+          <span class="home-card-desc">This pulls the table of contents for a journal's volume and issue, listing the titles, pages, and links.</span>
+          <span class="home-card-arrow">→</span>
+        </button>
+        <button type="button" class="home-card" id="goBook">
+          <span class="home-card-icon" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          </span>
+          <span class="home-card-tag">Verify by book</span>
+          <span class="home-card-title">Book Search</span>
+          <span class="home-card-desc">This confirms a book or edited volume by title or ISBN, listing the publisher, editors, and a link.</span>
+          <span class="home-card-arrow">→</span>
+        </button>
+      </div>
+    </section>
+
+    <details class="about-tool" id="aboutTool">
+      <summary>
+        <span>What this tool is — and isn't</span>
+        <svg class="about-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </summary>
+      <div class="about-body">
+        <div class="about-col about-is">
+          <h4>What it is</h4>
+          <ul>
+            <li>A way to look up a citation in several open scholarly indexes and see the published record.</li>
+            <li>A cross-check: it reports the title, journal, authors, and year those indexes hold.</li>
+            <li>A first-pass signal — a confidence score, a retraction flag, and a comparison of details you enter against the record.</li>
+            <li>An aid to your own judgment, meant to speed up investigating a citation you have questions about.</li>
+          </ul>
+        </div>
+        <div class="about-col about-isnot">
+          <h4>What it is not</h4>
+          <ul>
+            <li>Not a plagiarism or misconduct detector, and not a judgment on anyone's work or integrity.</li>
+            <li>Not proof a source does or does not exist — only a report of what these indexes contain.</li>
+            <li>Not comprehensive: it misses web-only sources, gray literature, many book chapters, and anything unindexed.</li>
+            <li>Not confirmation that a found record is the work actually cited — matching is probabilistic; you confirm it.</li>
+            <li>Not a retraction authority — the absence of a flag does not guarantee a work is in good standing.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- TITLE SEARCH VIEW -->
+  <div id="titleView" class="view">
+    <div class="view-nav">
+      <button type="button" class="btn-secondary" data-go="home">‹ Home</button>
+      <button type="button" class="btn-secondary" data-go="toc">Switch to journal search</button>
+      <button type="button" class="btn-secondary" data-go="book">Switch to book search</button>
+      <button type="button" class="btn-secondary" id="clearTitle">Clear search</button>
+    </div>
+
+    <header>
+      <h1 style="font-size:26px;">Title Search</h1>
+      <p class="sub">Paste a full citation, enter a DOI for an exact match, or fill specific fields. This returns the published title, journal, and link, checks any author/year/journal you enter against the record, and flags retractions.</p>
+    </header>
+
+    <form id="pasteForm">
+      <div class="field">
+        <label for="pasteBox">Paste a citation <span class="hint">the whole reference, as written</span></label>
+        <textarea id="pasteBox" rows="3" placeholder="Vaswani, A. et al. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30, 5998–6008."></textarea>
+      </div>
+      <div class="paste-caveat">
+        <span class="paste-caveat-ico" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span>
+        <span>A pasted reference returns a best-guess match. The tool can't confirm it's the same work you pasted — check the returned title, authors, and year against your source before trusting it.</span>
+      </div>
+      <div class="actions">
+        <button type="submit" id="pasteBtn">Verify pasted citation</button>
+        <span class="status" id="pasteStatusLine"></span>
+      </div>
+    </form>
+
+    <div class="section-divider">or search by specific field</div>
+
+    <form id="lookupForm">
+      <div class="field">
+        <label for="doi">DOI <span class="hint">optional — most reliable; resolves the exact article</span></label>
+        <input type="text" id="doi" placeholder="e.g. 10.1038/nature14539">
+      </div>
+      <div class="field">
+        <label for="title">Work title <span class="hint">required unless a DOI is given</span></label>
+        <input type="text" id="title" placeholder="e.g. Attention Is All You Need">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="author">Author <span class="hint">optional</span></label>
+          <input type="text" id="author" placeholder="e.g. Vaswani">
+        </div>
+        <div class="field">
+          <label for="year">Year <span class="hint">optional</span></label>
+          <input type="text" id="year" placeholder="e.g. 2017">
+        </div>
+      </div>
+      <div class="field">
+        <label for="journalField">Journal <span class="hint">optional — checked against the record</span></label>
+        <input type="text" id="journalField" placeholder="e.g. Nature">
+      </div>
+      <div class="actions">
+        <button type="submit" id="searchBtn">Search catalog</button>
+        <span class="status" id="statusLine"></span>
+      </div>
+    </form>
+
+    <div class="filter-bar" id="filterBarTitle" style="display:none;">
+      <div class="filter-row">
+        <input type="text" class="filter-input" id="filterInputTitle" placeholder='Filter results — e.g. climate AND policy NOT review'>
+        <span class="filter-count" id="filterCountTitle"></span>
+      </div>
+      <div class="filter-tip">Filters what's shown. <code>AND</code> / <code>OR</code> / <code>NOT</code> must be uppercase; use <code>"quotes"</code> for exact phrases and <code>( )</code> to group.</div>
+    </div>
+    <div id="results"></div>
+
+    <div class="callout-note">
+      <span class="callout-note-ico" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <span>Matching is approximate. A "weak match" flag means the result fell below the confidence bar, and a pasted reference always returns a best guess — confirm the title, authors, and year against your source before citing.</span>
+    </div>
+
+    <footer>
+      Sources: a DOI is resolved directly against CrossRef and OpenAlex for an exact match. Otherwise CrossRef and OpenAlex are queried first; Semantic Scholar, Europe PMC, and the book indexes Google Books and Open Library are checked only when neither returns a strong match. Free full-text links come from Unpaywall, DOAJ indicates whether the journal is a recognized open-access title, and retraction flags come from CrossRef and OpenAlex metadata. All are open and keyless.
+    </footer>
+  </div>
+
+  <!-- JOURNAL / TOC SEARCH VIEW -->
+  <div id="tocView" class="view">
+    <div class="view-nav">
+      <button type="button" class="btn-secondary" data-go="home">‹ Home</button>
+      <button type="button" class="btn-secondary" data-go="title">Switch to title search</button>
+      <button type="button" class="btn-secondary" data-go="book">Switch to book search</button>
+      <button type="button" class="btn-secondary" id="clearToc">Clear search</button>
+    </div>
+
+    <header>
+      <h1 style="font-size:26px;">Journal Search</h1>
+      <p class="sub">Enter the journal and volume, including the issue, (if available). This returns all indexed articles with page ranges for the journal volume, sourced from OpenAlex.</p>
+    </header>
+
+    <form id="tocForm">
+      <div class="field">
+        <label for="journal">Journal title <span class="hint">required</span></label>
+        <input type="text" id="journal" placeholder="e.g. Journal of Molecular Biology" required>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="volume">Volume <span class="hint">required</span></label>
+          <input type="text" id="volume" placeholder="e.g. 14" required>
+        </div>
+        <div class="field">
+          <label for="issue">Issue <span class="hint">optional</span></label>
+          <input type="text" id="issue" placeholder="e.g. 3">
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" id="tocBtn">Pull contents</button>
+        <span class="status" id="tocStatusLine"></span>
+      </div>
+    </form>
+
+    <div class="filter-bar" id="filterBarToc" style="display:none;">
+      <div class="filter-row">
+        <input type="text" class="filter-input" id="filterInputToc" placeholder='Filter articles — e.g. "gene expression" OR mutation'>
+        <span class="filter-count" id="filterCountToc"></span>
+      </div>
+      <div class="filter-tip">Filters what's shown. <code>AND</code> / <code>OR</code> / <code>NOT</code> must be uppercase; use <code>"quotes"</code> for exact phrases and <code>( )</code> to group.</div>
+    </div>
+    <div id="tocResults" style="margin-top:24px;"></div>
+
+    <footer>
+      Issue contents are pulled from OpenAlex only, since it supports precise volume/issue filtering; coverage still depends on what's indexed there.
+    </footer>
+  </div>
+
+  <!-- BOOK SEARCH VIEW -->
+  <div id="bookView" class="view">
+    <div class="view-nav">
+      <button type="button" class="btn-secondary" data-go="home">‹ Home</button>
+      <button type="button" class="btn-secondary" data-go="title">Switch to title search</button>
+      <button type="button" class="btn-secondary" data-go="toc">Switch to journal search</button>
+      <button type="button" class="btn-secondary" id="clearBook">Clear search</button>
+    </div>
+
+    <header>
+      <h1 style="font-size:26px;">Book Search</h1>
+      <p class="sub">Enter a book or edited-volume title, or an ISBN for an exact lookup. This confirms the volume in Google Books and Open Library and lists its publisher, editors, and a link.</p>
+    </header>
+
+    <form id="bookForm">
+      <div class="field">
+        <label for="bookTitle">Book or volume title <span class="hint">required unless an ISBN is given</span></label>
+        <input type="text" id="bookTitle" placeholder="e.g. The Handbook of Discourse Analysis">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="bookAuthor">Author or editor <span class="hint">optional</span></label>
+          <input type="text" id="bookAuthor" placeholder="e.g. Tannen">
+        </div>
+        <div class="field">
+          <label for="bookIsbn">ISBN <span class="hint">optional — most reliable</span></label>
+          <input type="text" id="bookIsbn" placeholder="e.g. 9780470670743">
+        </div>
+      </div>
+      <div class="paste-caveat">
+        <span class="paste-caveat-ico" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span>
+        <span>This confirms the book or edited volume, not an individual chapter within it. A found book does not verify that a specific cited chapter, its author, or its page range exist.</span>
+      </div>
+      <div class="actions">
+        <button type="submit" id="bookBtn">Search books</button>
+        <span class="status" id="bookStatusLine"></span>
+      </div>
+    </form>
+
+    <div class="filter-bar" id="filterBarBook" style="display:none;">
+      <div class="filter-row">
+        <input type="text" class="filter-input" id="filterInputBook" placeholder='Filter results — e.g. Blackwell AND discourse'>
+        <span class="filter-count" id="filterCountBook"></span>
+      </div>
+      <div class="filter-tip">Filters what's shown. <code>AND</code> / <code>OR</code> / <code>NOT</code> must be uppercase; use <code>"quotes"</code> for exact phrases and <code>( )</code> to group.</div>
+    </div>
+    <div id="bookResults" style="margin-top:24px;"></div>
+
+    <footer>
+      Book records come from Google Books and Open Library, both open and keyless. An ISBN gives an exact match; a title search is approximate. This confirms the volume, not a chapter within it.
+    </footer>
+  </div>
+
+  <div class="copyright">© 2026 Garrin Tomko | All rights reserved.</div>
+
+</div>
+
+<script>
+function showView(view){
+  document.getElementById('homeScreen').style.display = view === 'home' ? 'block' : 'none';
+  document.getElementById('titleView').style.display = view === 'title' ? 'block' : 'none';
+  document.getElementById('tocView').style.display = view === 'toc' ? 'block' : 'none';
+  document.getElementById('bookView').style.display = view === 'book' ? 'block' : 'none';
+  window.scrollTo(0, 0);
+}
+
+document.getElementById('goTitle').addEventListener('click', () => showView('title'));
+document.getElementById('goToc').addEventListener('click', () => showView('toc'));
+document.getElementById('goBook').addEventListener('click', () => showView('book'));
+document.querySelectorAll('[data-go]').forEach(el => {
+  el.addEventListener('click', () => showView(el.getAttribute('data-go')));
+});
+
+document.getElementById('aboutBridgeBtn').addEventListener('click', () => {
+  const about = document.getElementById('aboutTool');
+  about.open = true;
+  about.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.getElementById('clearTitle').addEventListener('click', () => {
+  document.getElementById('lookupForm').reset();
+  document.getElementById('pasteForm').reset();
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('statusLine').textContent = '';
+  document.getElementById('pasteStatusLine').textContent = '';
+  hideFilter('filterBarTitle');
+});
+document.getElementById('clearToc').addEventListener('click', () => {
+  document.getElementById('tocForm').reset();
+  document.getElementById('tocResults').innerHTML = '';
+  document.getElementById('tocStatusLine').textContent = '';
+  hideFilter('filterBarToc');
+});
+document.getElementById('clearBook').addEventListener('click', () => {
+  document.getElementById('bookForm').reset();
+  document.getElementById('bookResults').innerHTML = '';
+  document.getElementById('bookStatusLine').textContent = '';
+  hideFilter('filterBarBook');
+});
+
+wireFilter('filterInputTitle', 'results', 'filterCountTitle');
+wireFilter('filterInputToc', 'tocResults', 'filterCountToc');
+wireFilter('filterInputBook', 'bookResults', 'filterCountBook');
+
+showView('home');
+
+const form = document.getElementById('lookupForm');
+const btn = document.getElementById('searchBtn');
+const statusLine = document.getElementById('statusLine');
+const resultsEl = document.getElementById('results');
+
+function normalize(s){
+  return (s || "")
+    .toLowerCase()
+    .replace(/[\u2018\u2019\u201c\u201d]/g, "'")
+    .replace(/[^a-z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Simple similarity: token-overlap (Dice coefficient on word sets) — cheap and robust
+// enough for title matching without pulling in a library.
+function similarity(a, b){
+  const na = normalize(a), nb = normalize(b);
+  if(!na || !nb) return 0;
+  if(na === nb) return 1;
+  const ta = new Set(na.split(" "));
+  const tb = new Set(nb.split(" "));
+  let overlap = 0;
+  ta.forEach(t => { if(tb.has(t)) overlap++; });
+  return (2 * overlap) / (ta.size + tb.size);
+}
+
+// ---- Shared Boolean result filter ----
+// Local, source-independent: it filters results already fetched, never the query.
+// Operators AND / OR / NOT must be uppercase; lowercase and/or/not are literal words.
+// Supports quoted "exact phrases", parentheses, and implicit AND between terms.
+
+function tokenizeBool(q){
+  const tokens = [];
+  const re = /("(?:[^"]*)"|\(|\)|[^\s()]+)/g;
+  let m;
+  while((m = re.exec(q)) !== null) tokens.push(m[1]);
+  return tokens;
+}
+
+function parseBool(tokens){
+  let i = 0;
+  const peek = () => tokens[i];
+  const next = () => tokens[i++];
+
+  function parseExpr(){ return parseOr(); }
+  function parseOr(){
+    let node = parseAnd();
+    while(peek() === "OR"){ next(); node = { op:"or", l:node, r:parseAnd() }; }
+    return node;
+  }
+  function parseAnd(){
+    let node = parseNot();
+    while(peek() !== undefined && peek() !== ")" && peek() !== "OR"){
+      if(peek() === "AND") next();
+      node = { op:"and", l:node, r:parseNot() };
+    }
+    return node;
+  }
+  function parseNot(){
+    if(peek() === "NOT"){ next(); return { op:"not", c:parseNot() }; }
+    return parseAtom();
+  }
+  function parseAtom(){
+    const t = peek();
+    if(t === "("){ next(); const e = parseExpr(); if(peek() === ")") next(); return e; }
+    next();
+    let term = t || "";
+    if(term.startsWith('"') && term.endsWith('"')) term = term.slice(1, -1);
+    return { op:"term", term: term.toLowerCase() };
+  }
+  return tokens.length ? parseExpr() : null;
+}
+
+function evalBool(node, text){
+  if(!node) return true;
+  switch(node.op){
+    case "or":  return evalBool(node.l, text) || evalBool(node.r, text);
+    case "and": return evalBool(node.l, text) && evalBool(node.r, text);
+    case "not": return !evalBool(node.c, text);
+    case "term": return node.term === "" ? true : text.includes(node.term);
+  }
+  return true;
+}
+
+function makeBoolFilter(query){
+  const q = (query || "").trim();
+  if(!q) return null;
+  try { return parseBool(tokenizeBool(q)); }
+  catch(e){ return null; }
+}
+
+function applyFilter(containerId, query, countEl){
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const q = (query || "").trim();
+
+  // When a filter is active, expand any collapsed "see more" block so filtering
+  // covers every fetched result; when cleared, collapse back to the initial view.
+  container.querySelectorAll(".see-more-wrap").forEach(w => { w.style.display = q ? "none" : ""; });
+  container.querySelectorAll(".see-more-rest").forEach(r => { r.style.display = q ? "" : "none"; });
+
+  const items = container.querySelectorAll(".filter-item");
+  const tree = makeBoolFilter(query);
+  let shown = 0;
+  items.forEach(el => {
+    const text = (el.getAttribute("data-filter-text") || el.textContent || "").toLowerCase();
+    const ok = evalBool(tree, text);
+    el.style.display = ok ? "" : "none";
+    if(ok) shown++;
+  });
+  if(countEl){
+    countEl.textContent = q
+      ? `showing ${shown} of ${items.length}`
+      : `${items.length} result${items.length === 1 ? "" : "s"}`;
+  }
+}
+
+function wireFilter(inputId, containerId, countId){
+  const input = document.getElementById(inputId);
+  const countEl = document.getElementById(countId);
+  if(input) input.addEventListener("input", () => applyFilter(containerId, input.value, countEl));
+}
+
+function revealFilter(barId, inputId, containerId, countId){
+  const bar = document.getElementById(barId);
+  if(bar) bar.style.display = "flex";
+  const input = document.getElementById(inputId);
+  if(input) input.value = "";
+  applyFilter(containerId, "", document.getElementById(countId));
+  // Jump to the filter bar so the guide and results sit in view, not the search form.
+  if(bar){
+    requestAnimationFrame(() => {
+      bar.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+}
+
+function hideFilter(barId){
+  const bar = document.getElementById(barId);
+  if(bar) bar.style.display = "none";
+}
+
+
+function reconstructAbstract(invertedIndex){
+  if(!invertedIndex) return null;
+  const positions = [];
+  for(const word in invertedIndex){
+    invertedIndex[word].forEach(pos => positions[pos] = word);
+  }
+  return positions.join(" ").trim() || null;
+}
+
+async function queryCrossref(title, author, year){
+  let url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(title + " " + (author||""))}&rows=20&mailto=citation-checker@example.com`;
+  if(year && /^\d{4}$/.test(year)){
+    url += `&filter=from-pub-date:${year}-01-01,until-pub-date:${year}-12-31`;
+  }
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("CrossRef request failed");
+  const data = await res.json();
+  return (data.message && data.message.items) || [];
+}
+
+// Resolve a DOI directly — the article equivalent of an ISBN lookup (exact, no scoring)
+function cleanDoi(raw){
+  return (raw || "").trim()
+    .replace(/^https?:\/\/(dx\.)?doi\.org\//i, "")
+    .replace(/^doi:/i, "")
+    .trim();
+}
+
+async function resolveCrossrefDoi(doi){
+  const url = `https://api.crossref.org/works/${encodeURIComponent(doi)}?mailto=citation-checker@example.com`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("CrossRef DOI lookup failed");
+  const data = await res.json();
+  return data.message ? [data.message] : [];
+}
+
+async function resolveOpenAlexDoi(doi){
+  const url = `https://api.openalex.org/works/doi:${encodeURIComponent(doi)}?mailto=citation-checker@example.com`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("OpenAlex DOI lookup failed");
+  const data = await res.json();
+  return data && data.id ? [data] : [];
+}
+
+async function queryOpenAlex(title, author, year){
+  let filter = [];
+  if(year && /^\d{4}$/.test(year)) filter.push(`publication_year:${year}`);
+  let url = `https://api.openalex.org/works?search=${encodeURIComponent(title)}&per-page=20&mailto=citation-checker@example.com`;
+  if(filter.length) url += `&filter=${filter.join(",")}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("OpenAlex request failed");
+  const data = await res.json();
+  let results = data.results || [];
+  // If an author was supplied, prefer records whose author list contains it,
+  // but don't discard everything if none match (search is already title-ranked).
+  if(author){
+    const na = normalize(author);
+    const withAuthor = results.filter(r =>
+      (r.authorships || []).some(a => normalize(a.author?.display_name || "").includes(na))
+    );
+    if(withAuthor.length) results = withAuthor;
+  }
+  return results;
+}
+
+// --- Fallback searchers (only queried when primaries lack a strong match) ---
+
+async function querySemanticScholar(title){
+  const fields = "title,year,venue,externalIds,openAccessPdf,abstract,authors";
+  const url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(title)}&limit=20&fields=${fields}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("Semantic Scholar request failed");
+  const data = await res.json();
+  return data.data || [];
+}
+
+async function queryEuropePMC(title){
+  const q = `TITLE:"${title.replace(/"/g, "")}"`;
+  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(q)}&format=json&pageSize=20&resultType=core`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("Europe PMC request failed");
+  const data = await res.json();
+  return (data.resultList && data.resultList.result) || [];
+}
+
+// --- Book sources (keyless): help confirm the containing volume of a cited chapter ---
+
+async function queryGoogleBooks(q){
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=20`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("Google Books request failed");
+  const data = await res.json();
+  return data.items || [];
+}
+
+async function queryOpenLibrary(q){
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=20`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("Open Library request failed");
+  const data = await res.json();
+  return data.docs || [];
+}
+
+// --- Enrichment (best-effort; failures return null, never throw) ---
+
+async function unpaywallLink(doi){
+  if(!doi) return null;
+  const clean = doi.replace(/^https?:\/\/doi\.org\//i, "");
+  try{
+    const res = await fetch(`https://api.unpaywall.org/v2/${encodeURIComponent(clean)}?email=citation-checker@example.com`);
+    if(!res.ok) return null;
+    const data = await res.json();
+    return (data.best_oa_location && data.best_oa_location.url) || null;
+  }catch(e){ return null; }
+}
+
+async function doajJournalStatus(issn, journalName){
+  try{
+    let url;
+    if(issn){
+      url = `https://doaj.org/api/search/journals/issn:${encodeURIComponent(issn)}`;
+    } else if(journalName){
+      url = `https://doaj.org/api/search/journals/${encodeURIComponent('"' + journalName + '"')}`;
+    } else {
+      return null;
+    }
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    const data = await res.json();
+    return !!(data.results && data.results.length > 0);
+  }catch(e){ return null; }
+}
+
+// --- Normalize every source into one shape so a single renderer handles all ---
+
+function normCrossref(it){
+  const doiRaw = it.DOI || null;
+  const updates = it['update-to'] || [];
+  const retracted = it.type === "retraction"
+    || updates.some(u => (u.type || "").toLowerCase() === "retraction");
+  return {
+    source: "CrossRef",
+    title: (it.title && it.title[0]) || "",
+    journal: (it['container-title'] && it['container-title'][0]) || null,
+    issn: (it.ISSN && it.ISSN[0]) || null,
+    authors: (it.author || []).slice(0,3).map(a => [a.given, a.family].filter(Boolean).join(" ")).join("; "),
+    year: it['published-print']?.['date-parts']?.[0]?.[0]
+       || it['published-online']?.['date-parts']?.[0]?.[0]
+       || it.created?.['date-parts']?.[0]?.[0] || null,
+    doi: doiRaw ? `https://doi.org/${doiRaw}` : null,
+    link: doiRaw ? `https://doi.org/${doiRaw}` : null,
+    abstract: null,
+    oa: null,
+    retracted: retracted
+  };
+}
+
+function normOpenAlex(it){
+  const doi = it.doi || null;
+  const landing = it.primary_location?.landing_page_url || null;
+  const oaUrl = it.open_access?.oa_url || null;
+  const src = it.primary_location?.source || {};
+  return {
+    source: "OpenAlex",
+    title: it.display_name || "",
+    journal: src.display_name || null,
+    issn: src.issn_l || (src.issn && src.issn[0]) || null,
+    authors: (it.authorships || []).slice(0,3).map(a => a.author?.display_name).filter(Boolean).join("; "),
+    year: it.publication_year || null,
+    doi: doi,
+    link: doi || oaUrl || landing || null,
+    abstract: reconstructAbstract(it.abstract_inverted_index),
+    oa: !!it.open_access?.is_oa,
+    retracted: it.is_retracted === true
+  };
+}
+
+function normSemanticScholar(it){
+  const doi = it.externalIds?.DOI ? `https://doi.org/${it.externalIds.DOI}` : null;
+  return {
+    source: "Semantic Scholar",
+    title: it.title || "",
+    journal: it.venue || null,
+    issn: null,
+    authors: (it.authors || []).slice(0,3).map(a => a.name).filter(Boolean).join("; "),
+    year: it.year || null,
+    doi: doi,
+    link: doi || it.openAccessPdf?.url || null,
+    abstract: it.abstract || null,
+    oa: !!it.openAccessPdf?.url
+  };
+}
+
+function normEuropePMC(it){
+  const doi = it.doi ? `https://doi.org/${it.doi}` : null;
+  let link = doi;
+  if(!link && it.pmid) link = `https://europepmc.org/abstract/MED/${it.pmid}`;
+  if(!link && it.id && it.source) link = `https://europepmc.org/article/${it.source}/${it.id}`;
+  return {
+    source: "Europe PMC",
+    title: it.title || "",
+    journal: it.journalInfo?.journal?.title || it.journalTitle || null,
+    issn: it.journalInfo?.journal?.issn || null,
+    authors: it.authorString ? it.authorString.split(",").slice(0,3).map(s => s.trim()).join("; ") : "",
+    year: it.pubYear || null,
+    doi: doi,
+    link: link,
+    abstract: it.abstractText || null,
+    oa: it.isOpenAccess === "Y"
+  };
+}
+
+function normGoogleBooks(it){
+  const v = it.volumeInfo || {};
+  const title = v.title ? (v.subtitle ? `${v.title}: ${v.subtitle}` : v.title) : "";
+  return {
+    source: "Google Books",
+    isBook: true,
+    title: title,
+    journal: null,
+    issn: null,
+    publisher: v.publisher || null,
+    authors: (v.authors || []).slice(0,3).join("; "),
+    year: (v.publishedDate || "").slice(0,4) || null,
+    doi: null,
+    link: v.canonicalVolumeLink || v.infoLink || null,
+    abstract: v.description || null,
+    oa: null
+  };
+}
+
+function normOpenLibrary(doc){
+  return {
+    source: "Open Library",
+    isBook: true,
+    title: doc.title || "",
+    journal: null,
+    issn: null,
+    publisher: (doc.publisher && doc.publisher[0]) || null,
+    authors: (doc.author_name || []).slice(0,3).join("; "),
+    year: doc.first_publish_year || null,
+    doi: null,
+    link: doc.key ? `https://openlibrary.org${doc.key}` : null,
+    abstract: null,
+    oa: null
+  };
+}
+
+function escapeAttr(str){
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+// Small visual confidence meter shown beside a match percentage — clamps 0-100,
+// filled proportionally, colored by whether the match cleared the confidence bar.
+function matchBarHtml(pct, weak){
+  const clamped = Math.max(0, Math.min(100, pct));
+  const cls = weak ? "match-bar-fill weak" : "match-bar-fill";
+  return `<div class="match-bar" role="img" aria-label="${clamped}% match confidence"><div class="${cls}" style="width:${clamped}%"></div></div>`;
+}
+
+function retractionBanner(rec){
+  if(!rec.retracted) return "";
+  return `
+    <div class="retraction-banner">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <span>Flagged as retracted or subject to a published retraction notice. Citing this work is a serious concern — confirm on the publisher's page before relying on it.</span>
+    </div>
+  `;
+}
+
+// Compare what the user entered against the matched record, field by field.
+// Only compares fields the user actually filled in. Returns HTML rows or "".
+function fieldCheckRows(rec, entered){
+  if(!entered) return "";
+  const rows = [];
+
+  if(entered.year && /^\d{4}$/.test(entered.year) && rec.year){
+    const agree = String(rec.year) === String(entered.year);
+    rows.push(fieldCheckRow("Year", entered.year, rec.year, agree));
+  }
+  if(entered.author && rec.authors){
+    const na = normalize(entered.author);
+    const agree = normalize(rec.authors).split(" ").some(w => w && na.split(" ").includes(w));
+    rows.push(fieldCheckRow("Author", entered.author, rec.authors, agree));
+  }
+  if(entered.journal && rec.journal){
+    const nj = new Set(normalize(entered.journal).split(" ").filter(Boolean));
+    const rj = new Set(normalize(rec.journal).split(" ").filter(Boolean));
+    let overlap = 0; nj.forEach(w => { if(rj.has(w)) overlap++; });
+    const agree = nj.size > 0 && overlap / nj.size >= 0.5;
+    rows.push(fieldCheckRow("Journal", entered.journal, rec.journal, agree));
+  }
+
+  if(rows.length === 0) return "";
+  return `<div class="field-check"><span class="field-check-head">Citation details you entered vs. this record</span>${rows.join("")}</div>`;
+}
+
+function fieldCheckRow(label, entered, found, agree){
+  const icon = agree
+    ? `<svg class="fc-ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`
+    : `<svg class="fc-no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  const verdict = agree
+    ? `<span class="fc-verdict fc-ok">matches</span>`
+    : `<span class="fc-verdict fc-no">differs — you entered “${escapeHtml(entered)}”</span>`;
+  return `<div class="fc-row">${icon}<span class="fc-label">${escapeHtml(label)}</span><span class="fc-found">${escapeHtml(String(found))}</span>${verdict}</div>`;
+}
+
+function titleInterpGuide(){
+  return `
+    <div class="interp-guide">
+      <h3>How to read these results</h3>
+      <div class="g-row"><span class="g-term">Source tag</span><span>The index that returned this record (CrossRef, OpenAlex, Semantic Scholar, or Europe PMC). The same work found in several indexes is shown once.</span></div>
+      <div class="g-row"><span class="g-term">Title / journal / year</span><span>The details on record. Compare these against the citation you are checking — a real match should agree on all three.</span></div>
+      <div class="g-row"><span class="g-term">Journal (DOAJ)</span><span>Whether the journal is listed in the Directory of Open Access Journals, a recognized open-access title. "Not found" is not proof a journal is illegitimate.</span></div>
+      <div class="g-row"><span class="g-term">Title match %</span><span>A rough closeness score between the record and what you entered. Higher is stronger — it is a signal, not proof.</span></div>
+      <div class="g-row"><span class="g-term">Retraction flag</span><span>A red banner means the record is marked retracted or has a published retraction notice. Do not rely on the work without reading that notice.</span></div>
+      <div class="g-row"><span class="g-term">Details you entered</span><span>If you supplied an author, year, or journal, each is checked against the record — a red ✕ means the citation's detail differs from what's on file.</span></div>
+      <div class="g-row"><span class="g-term">Weak match flag</span><span>Shown in red when a result fell below the confidence bar. It may not be the cited work; verify it by hand.</span></div>
+      <div class="g-row"><span class="g-term">Links</span><span>"Open published record" goes to the DOI or publisher page; "Free full text" is a legal open copy located via Unpaywall.</span></div>
+    </div>
+  `;
+}
+
+function journalInterpGuide(){
+  return `
+    <div class="interp-guide">
+      <h3>How to read these results</h3>
+      <div class="g-row"><span class="g-term">Each row</span><span>One article indexed in the journal volume (and issue, if given) you entered, ordered by starting page.</span></div>
+      <div class="g-row"><span class="g-term">Page column</span><span>The article's page range as recorded in the index. A dash "—" means no page data was on record.</span></div>
+      <div class="g-row"><span class="g-term">Titles</span><span>Each links to the published record (DOI or landing page) so you can open the article directly.</span></div>
+      <div class="g-row"><span class="g-term">Completeness</span><span>The list reflects only what OpenAlex has indexed for this volume. A missing article does not mean it was not published.</span></div>
+    </div>
+  `;
+}
+
+function renderBookCard(rec, opts){
+  opts = (opts && typeof opts === "object") ? opts : {};
+  const raw = rec.abstract || "";
+  const desc = raw.length > 480 ? raw.slice(0,480) + "…" : raw;
+  const descHtml = desc
+      ? `<div class="abstract"><span class="k">Publisher description</span>${escapeHtml(desc)}</div>` : "";
+  const linkHtml = rec.link
+      ? `<a class="linkout" href="${escapeAttr(rec.link)}" target="_blank" rel="noopener">→ Open ${escapeHtml(rec.source)} record</a>` : "";
+
+  let matchRow = "";
+  if(opts.exact){
+    matchRow = `<div class="meta-row"><span class="k">Match</span><span>Matched by ISBN — exact record</span></div>`;
+  } else if(typeof opts.sim === "number"){
+    const pct = Math.round(opts.sim * 100);
+    matchRow = `<div class="meta-row"><span class="k">Title match</span><span>${pct}% word-overlap vs. what you entered${opts.weak ? " — treat with caution" : ""}</span></div>`
+      + `<div class="meta-row"><span class="k"></span>${matchBarHtml(pct, opts.weak)}</div>`;
+  }
+  const weakTag = opts.weak ? `<span class="tag match-low">Weak match</span>` : "";
+
+  const filterText = escapeAttr([rec.title, rec.authors, rec.publisher, rec.year, rec.source, rec.abstract].filter(Boolean).join(" "));
+  const lrClass = opts.lowerRanked ? " lower-ranked" : "";
+
+  return `
+    <div class="card filter-item${lrClass}" data-filter-text="${filterText}">
+      <span class="tag source">${escapeHtml(rec.source)}</span>
+      ${weakTag}
+      <h2>${escapeHtml(rec.title || "(no title on record)")}</h2>
+      <div class="meta-row"><span class="k">Type</span><span>Book or edited volume</span></div>
+      <div class="meta-row"><span class="k">Authors / editors</span><span>${rec.authors ? escapeHtml(rec.authors) : "—"}</span></div>
+      ${rec.publisher ? `<div class="meta-row"><span class="k">Publisher</span><span>${escapeHtml(rec.publisher)}</span></div>` : ""}
+      <div class="meta-row"><span class="k">Year</span><span>${rec.year || "—"}</span></div>
+      ${matchRow}
+      ${descHtml}
+      <div style="display:flex; gap:18px; flex-wrap:wrap;">${linkHtml}</div>
+    </div>
+  `;
+}
+
+function booksSection(bookCardsHtml){
+  return `
+    <div class="section-divider">Books that may contain the cited work</div>
+    <div class="callout-note">
+      <span class="callout-note-ico" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <span>These are books or edited volumes whose details resemble the citation. A match here means the book exists and may contain the cited chapter — it does not confirm the chapter itself, since chapter-level records are often not indexed.</span>
+    </div>
+    ${bookCardsHtml}
+  `;
+}
+
+function pickBooks(bookRecords){
+  const seen = new Set();
+  const out = [];
+  for(const r of bookRecords){
+    if(!r.title) continue;
+    const key = normalize(r.title) + "|" + (r.year || "");
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push(r);
+    if(out.length >= 3) break;
+  }
+  return out;
+}
+
+function renderRecordCard(rec, queryTitle, weak, opts){
+  opts = opts || {};
+  const sim = (typeof opts.sim === "number") ? opts.sim : similarity(rec.title || "", queryTitle);
+  const pct = Math.round(sim * 100);
+  const matchLabel = opts.matchLabel || "% word-overlap vs. what you entered";
+
+  const doajHtml = rec.doaj === true
+      ? `<div class="meta-row"><span class="k">Journal (DOAJ)</span><span>Listed — a recognized open-access journal</span></div>`
+    : rec.doaj === false
+      ? `<div class="meta-row"><span class="k">Journal (DOAJ)</span><span>Not found in DOAJ's open-access list</span></div>`
+    : "";
+
+  const abstractHtml = rec.abstract
+      ? `<div class="abstract"><span class="k">Abstract on record</span>${escapeHtml(rec.abstract)}</div>` : "";
+
+  const linkHtml = rec.link
+      ? `<a class="linkout" href="${escapeAttr(rec.link)}" target="_blank" rel="noopener">→ Open published record</a>` : "";
+  const freeHtml = rec.freeLink
+      ? `<a class="linkout" href="${escapeAttr(rec.freeLink)}" target="_blank" rel="noopener">→ Free full text (Unpaywall)</a>` : "";
+
+  // Match row: exact DOI resolution shows a certainty label instead of a fuzzy score
+  let matchHtml;
+  if(opts.exact){
+    matchHtml = `<div class="meta-row"><span class="k">Match</span><span>Resolved by DOI — exact record</span></div>`;
+  } else {
+    matchHtml = `<div class="meta-row"><span class="k">Title match</span><span>${pct}${matchLabel}${weak ? " — treat with caution" : ""}</span></div>`
+      + `<div class="meta-row"><span class="k"></span>${matchBarHtml(pct, weak)}</div>`;
+  }
+
+  const weakTag = (weak && !opts.exact) ? `<span class="tag match-low">Weak match</span>` : "";
+
+  const filterText = escapeAttr([rec.title, rec.journal, rec.authors, rec.year, rec.source, rec.abstract].filter(Boolean).join(" "));
+  const lrClass = opts.lowerRanked ? " lower-ranked" : "";
+  const retractedClass = rec.retracted ? " is-retracted" : "";
+
+  return `
+    <div class="card filter-item${lrClass}${retractedClass}" data-filter-text="${filterText}">
+      <span class="tag source">${escapeHtml(rec.source)}</span>
+      ${weakTag}
+      ${retractionBanner(rec)}
+      <h2>${escapeHtml(rec.title || "(no title on record)")}</h2>
+      <div class="meta-row"><span class="k">Journal</span><span>${rec.journal ? escapeHtml(rec.journal) : "— not on record —"}</span></div>
+      ${doajHtml}
+      <div class="meta-row"><span class="k">Authors</span><span>${rec.authors ? escapeHtml(rec.authors) : "—"}</span></div>
+      <div class="meta-row"><span class="k">Year</span><span>${rec.year || "—"}</span></div>
+      ${matchHtml}
+      ${fieldCheckRows(rec, opts.entered)}
+      ${abstractHtml}
+      <div style="display:flex; gap:18px; flex-wrap:wrap;">${linkHtml}${freeHtml}</div>
+    </div>
+  `;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function scholarLine(parts){
+  const q = encodeURIComponent(parts.filter(Boolean).join(" "));
+  const url = `https://scholar.google.com/scholar?q=${q}`;
+  const ico = `<svg class="scholar-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>`;
+  return `<div class="scholar-line">${ico}<span>Not the right result? <a href="${url}" target="_blank" rel="noopener">Search Google Scholar →</a></span></div>`;
+}
+
+// Shows the first INITIAL cards, tucks the rest behind a "See more" button.
+// cards: array of HTML strings, already rendered (lower-ranked ones flagged by caller).
+const SEE_MORE_INITIAL = 10;
+let seeMoreSeq = 0;
+function renderWithSeeMore(cards){
+  if(cards.length <= SEE_MORE_INITIAL) return cards.join("");
+  const id = "seemore-" + (++seeMoreSeq);
+  const head = cards.slice(0, SEE_MORE_INITIAL).join("");
+  const rest = cards.slice(SEE_MORE_INITIAL).join("");
+  const hiddenCount = cards.length - SEE_MORE_INITIAL;
+  return head
+    + `<div class="see-more-wrap" id="${id}-wrap">`
+    +   `<button type="button" class="see-more-btn" onclick="revealMore('${id}')">See ${hiddenCount} more, lower-ranked result${hiddenCount === 1 ? "" : "s"} ↓</button>`
+    + `</div>`
+    + `<div class="see-more-rest" id="${id}-rest" style="display:none;">`
+    +   `<div class="lower-ranked-label">Lower-ranked matches</div>`
+    +   rest
+    + `</div>`;
+}
+
+function revealMore(id){
+  const wrap = document.getElementById(id + "-wrap");
+  const rest = document.getElementById(id + "-rest");
+  if(wrap) wrap.style.display = "none";
+  if(rest) rest.style.display = "";
+}
+
+
+function fallbackCard(title, author, year){
+  const q = encodeURIComponent([title, author, year].filter(Boolean).join(" "));
+  const scholarUrl = `https://scholar.google.com/scholar?q=${q}`;
+  return `
+    <div class="empty-note">
+      No confident match came back from CrossRef, OpenAlex, Semantic Scholar, or Europe PMC for this title.
+      That can mean it's a book chapter, a report, a preprint not yet indexed, or the title text has diverged
+      from the published version.<br><br>
+      Try this search directly: <a href="${scholarUrl}" target="_blank" rel="noopener">${scholarUrl}</a>
+    </div>
+  `;
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const title = document.getElementById('title').value.trim();
+  const author = document.getElementById('author').value.trim();
+  const year = document.getElementById('year').value.trim();
+  const journalIn = document.getElementById('journalField').value.trim();
+  const doiIn = cleanDoi(document.getElementById('doi').value);
+  if(!title && !doiIn){
+    statusLine.textContent = "Enter a work title or a DOI.";
+    return;
+  }
+
+  const entered = { author, year, journal: journalIn };
+  const HIGH = 0.6;   // confident match
+  const MIN = 0.35;   // floor to show at all (below this = discard)
+
+  btn.disabled = true;
+  resultsEl.innerHTML = "";
+
+  // 0) DOI-first — if a DOI is given, resolve it exactly (no fuzzy scoring)
+  if(doiIn){
+    statusLine.textContent = "resolving DOI…";
+    const [crD, oaD] = await Promise.allSettled([
+      resolveCrossrefDoi(doiIn),
+      resolveOpenAlexDoi(doiIn)
+    ]);
+    let exactRecs = [];
+    if(crD.status === "fulfilled") exactRecs.push(...crD.value.map(normCrossref));
+    if(oaD.status === "fulfilled") exactRecs.push(...oaD.value.map(normOpenAlex));
+
+    // prefer the record carrying more detail (OpenAlex has retraction flag + abstract)
+    if(exactRecs.length){
+      const seen = new Set();
+      const uniq = [];
+      for(const r of exactRecs){
+        const k = (r.doi || "").toLowerCase();
+        if(k && seen.has(k)) continue;
+        if(k) seen.add(k);
+        uniq.push(r);
+      }
+      // enrich the resolved record(s)
+      await Promise.all(uniq.slice(0, SEE_MORE_INITIAL).map(async (r) => {
+        await Promise.all([
+          (r.doi && !r.oa) ? unpaywallLink(r.doi).then(u => { r.freeLink = u; }) : null,
+          (r.issn || r.journal) ? doajJournalStatus(r.issn, r.journal).then(d => { r.doaj = d; }) : null
+        ]);
+      }));
+      btn.disabled = false;
+      const cards = uniq.map(r => renderRecordCard(r, r.title, false, { exact: true, entered }));
+      resultsEl.innerHTML = titleInterpGuide() + renderWithSeeMore(cards) + scholarLine([doiIn]);
+      revealFilter('filterBarTitle', 'filterInputTitle', 'results', 'filterCountTitle');
+      const anyRetracted = uniq.some(r => r.retracted);
+      statusLine.textContent = anyRetracted
+        ? "Resolved by DOI — this record is flagged as retracted. Read the notice before relying on it."
+        : "Resolved by DOI — exact record. Confirm the details match the citation.";
+      return;
+    }
+    // DOI didn't resolve; fall through to title search if a title was given
+    if(!title){
+      btn.disabled = false;
+      resultsEl.innerHTML = doiFallbackCard(doiIn);
+      statusLine.textContent = "That DOI didn't resolve — it may be mistyped, but the work could still exist.";
+      hideFilter('filterBarTitle');
+      return;
+    }
+  }
+
+  statusLine.textContent = "querying CrossRef and OpenAlex…";
+
+  let records = [];
+
+  // 1) Primary sources, in parallel
+  const [crRes, oaRes] = await Promise.allSettled([
+    queryCrossref(title, author, year),
+    queryOpenAlex(title, author, year)
+  ]);
+  if(crRes.status === "fulfilled") records.push(...crRes.value.map(normCrossref));
+  if(oaRes.status === "fulfilled") records.push(...oaRes.value.map(normOpenAlex));
+
+  const bestSoFar = records
+    .map(r => similarity(r.title || "", title))
+    .sort((a,b) => b - a)[0] || 0;
+
+  // 2) Fallbacks — only if the primaries didn't produce a strong match
+  let usedFallback = false;
+  let bookRecords = [];
+  if(bestSoFar < HIGH){
+    usedFallback = true;
+    statusLine.textContent = "no strong match yet — checking Semantic Scholar, Europe PMC, and book indexes…";
+    const bookQ = [title, author].filter(Boolean).join(" ");
+    const [ssRes, epRes, gbRes, olRes] = await Promise.allSettled([
+      querySemanticScholar(title),
+      queryEuropePMC(title),
+      queryGoogleBooks(bookQ),
+      queryOpenLibrary(bookQ)
+    ]);
+    if(ssRes.status === "fulfilled") records.push(...ssRes.value.map(normSemanticScholar));
+    if(epRes.status === "fulfilled") records.push(...epRes.value.map(normEuropePMC));
+    if(gbRes.status === "fulfilled") bookRecords.push(...gbRes.value.map(normGoogleBooks));
+    if(olRes.status === "fulfilled") bookRecords.push(...olRes.value.map(normOpenLibrary));
+  }
+
+  // If literally every request failed
+  const anyFulfilled = [crRes, oaRes].some(r => r.status === "fulfilled");
+  if(!anyFulfilled && records.length === 0 && bookRecords.length === 0){
+    btn.disabled = false;
+    statusLine.textContent = "Lookups failed — check your connection.";
+    resultsEl.innerHTML = fallbackCard(title, author, year);
+    hideFilter('filterBarTitle');
+    return;
+  }
+
+  // 3) Score, keep matches at/above the floor, sort best-first
+  let scored = records
+    .map(r => ({ r, sim: similarity(r.title || "", title) }))
+    .filter(x => x.sim >= MIN)
+    .sort((a,b) => b.sim - a.sim);
+
+  // 4) Dedupe by DOI (same paper from two indexes shows once — keep highest score)
+  const seenDoi = new Set();
+  const deduped = [];
+  for(const x of scored){
+    const key = x.r.doi ? x.r.doi.toLowerCase().replace(/^https?:\/\/doi\.org\//, "") : null;
+    if(key){
+      if(seenDoi.has(key)) continue;
+      seenDoi.add(key);
+    }
+    deduped.push(x);
+  }
+
+  const shown = deduped.slice(0, 25); // show first 10, rest behind "See more"
+  const shownBooks = pickBooks(bookRecords);
+
+  if(shown.length === 0 && shownBooks.length === 0){
+    btn.disabled = false;
+    resultsEl.innerHTML = fallbackCard(title, author, year);
+    statusLine.textContent = usedFallback ? "No confident match in any index." : "No confident match found.";
+    hideFilter('filterBarTitle');
+    return;
+  }
+
+  // 5) Enrich the shown article records: free full-text (Unpaywall) + journal listing
+  // (DOAJ) — only the first batch shown by default, to keep enrichment calls bounded.
+  // The two lookups per card are independent, so run them concurrently.
+  statusLine.textContent = "checking free full-text and journal listing…";
+  await Promise.all(shown.slice(0, SEE_MORE_INITIAL).map(async (x) => {
+    await Promise.all([
+      (x.r.doi && !x.r.oa)
+        ? unpaywallLink(x.r.doi).then(u => { x.r.freeLink = u; })
+        : null,
+      (x.r.issn || x.r.journal)
+        ? doajJournalStatus(x.r.issn, x.r.journal).then(d => { x.r.doaj = d; })
+        : null
+    ]);
+  }));
+
+  btn.disabled = false;
+
+  // 6) Render — articles (with guide) first, then any book candidates
+  let html = "";
+  if(shown.length){
+    const cards = shown.map((x, i) => renderRecordCard(x.r, title, x.sim < HIGH, { lowerRanked: i >= SEE_MORE_INITIAL, entered }));
+    html += titleInterpGuide() + renderWithSeeMore(cards);
+  }
+  if(shownBooks.length){
+    html += booksSection(shownBooks.map(b => renderBookCard(b)).join(""));
+  }
+  html += scholarLine([title, author, year]);
+  resultsEl.innerHTML = html;
+  revealFilter('filterBarTitle', 'filterInputTitle', 'results', 'filterCountTitle');
+
+  const hasStrong = shown.some(x => x.sim >= HIGH);
+  if(shown.length === 0 && shownBooks.length){
+    statusLine.textContent = "No article match — showing book(s) that may contain the cited work.";
+  } else {
+    statusLine.textContent = hasStrong
+      ? "Done. Strong match shown; still confirm details against the source before citing."
+      : "Only weak matches found — flagged. Verify carefully; this may not be the cited work.";
+  }
+});
+
+// ---- Paste-a-citation lookup ----
+
+// For a pasted reference we score by how much of a candidate's TITLE appears within
+// the pasted text (which contains the title plus authors, year, journal, pages).
+// A genuine match has nearly all its title words present; a wrong paper does not.
+function titleContainment(recordTitle, pastedText){
+  const rt = normalize(recordTitle);
+  if(!rt) return 0;
+  const pt = new Set(normalize(pastedText).split(" "));
+  const words = rt.split(" ");
+  let hit = 0;
+  words.forEach(w => { if(pt.has(w)) hit++; });
+  return hit / words.length;
+}
+
+const pasteForm = document.getElementById('pasteForm');
+const pasteBtn = document.getElementById('pasteBtn');
+const pasteStatusLine = document.getElementById('pasteStatusLine');
+
+pasteForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pasted = document.getElementById('pasteBox').value.trim();
+  if(!pasted){
+    pasteStatusLine.textContent = "Paste a citation first.";
+    return;
+  }
+
+  const HIGH = 0.7;   // most of the title present in the pasted text
+  const MIN = 0.4;    // floor to show at all
+
+  pasteBtn.disabled = true;
+  pasteStatusLine.textContent = "matching the pasted citation via CrossRef…";
+  resultsEl.innerHTML = "";
+
+  const score = (r) => titleContainment(r.title || "", pasted);
+  let records = [];
+
+  // 1) CrossRef's bibliographic query is purpose-built for raw citation strings
+  const crRes = await Promise.allSettled([queryCrossref(pasted, "", "")]);
+  if(crRes[0].status === "fulfilled") records.push(...crRes[0].value.map(normCrossref));
+
+  const bestSoFar = records.map(score).sort((a,b) => b - a)[0] || 0;
+
+  // 2) Fallbacks only if CrossRef didn't produce a strong match
+  let usedFallback = false;
+  let bookRecords = [];
+  if(bestSoFar < HIGH){
+    usedFallback = true;
+    pasteStatusLine.textContent = "no strong match yet — checking OpenAlex, Semantic Scholar, Europe PMC, and book indexes…";
+    const [oaRes, ssRes, epRes, gbRes, olRes] = await Promise.allSettled([
+      queryOpenAlex(pasted, "", ""),
+      querySemanticScholar(pasted),
+      queryEuropePMC(pasted),
+      queryGoogleBooks(pasted),
+      queryOpenLibrary(pasted)
+    ]);
+    if(oaRes.status === "fulfilled") records.push(...oaRes.value.map(normOpenAlex));
+    if(ssRes.status === "fulfilled") records.push(...ssRes.value.map(normSemanticScholar));
+    if(epRes.status === "fulfilled") records.push(...epRes.value.map(normEuropePMC));
+    if(gbRes.status === "fulfilled") bookRecords.push(...gbRes.value.map(normGoogleBooks));
+    if(olRes.status === "fulfilled") bookRecords.push(...olRes.value.map(normOpenLibrary));
+  }
+
+  if(records.length === 0 && bookRecords.length === 0){
+    pasteBtn.disabled = false;
+    pasteStatusLine.textContent = "Lookup failed or nothing came back.";
+    resultsEl.innerHTML = fallbackCard(pasted, "", "");
+    hideFilter('filterBarTitle');
+    return;
+  }
+
+  // 3) Score by containment, keep above floor, sort, dedupe by DOI
+  let scored = records
+    .map(r => ({ r, sim: score(r) }))
+    .filter(x => x.sim >= MIN)
+    .sort((a,b) => b.sim - a.sim);
+
+  const seenDoi = new Set();
+  const deduped = [];
+  for(const x of scored){
+    const key = x.r.doi ? x.r.doi.toLowerCase().replace(/^https?:\/\/doi\.org\//, "") : null;
+    if(key){ if(seenDoi.has(key)) continue; seenDoi.add(key); }
+    deduped.push(x);
+  }
+  const shown = deduped.slice(0, 25);
+  const shownBooks = pickBooks(bookRecords);
+
+  if(shown.length === 0 && shownBooks.length === 0){
+    pasteBtn.disabled = false;
+    resultsEl.innerHTML = fallbackCard(pasted, "", "");
+    pasteStatusLine.textContent = usedFallback ? "No confident match in any index." : "No confident match found.";
+    hideFilter('filterBarTitle');
+    return;
+  }
+
+  // 4) Enrich: free full-text (Unpaywall) + journal listing (DOAJ) — only the first
+  // batch shown by default, to keep enrichment calls bounded. The two lookups per
+  // card are independent, so run them concurrently.
+  pasteStatusLine.textContent = "checking free full-text and journal listing…";
+  await Promise.all(shown.slice(0, SEE_MORE_INITIAL).map(async (x) => {
+    await Promise.all([
+      (x.r.doi && !x.r.oa)
+        ? unpaywallLink(x.r.doi).then(u => { x.r.freeLink = u; })
+        : null,
+      (x.r.issn || x.r.journal)
+        ? doajJournalStatus(x.r.issn, x.r.journal).then(d => { x.r.doaj = d; })
+        : null
+    ]);
+  }));
+
+  pasteBtn.disabled = false;
+
+  // 5) Render — articles (with containment score) first, then any book candidates
+  let html = "";
+  if(shown.length){
+    const cards = shown.map((x, i) => renderRecordCard(x.r, x.r.title, x.sim < HIGH,
+      { sim: x.sim, matchLabel: "% of this title found in your pasted citation", lowerRanked: i >= SEE_MORE_INITIAL }));
+    html += titleInterpGuide() + renderWithSeeMore(cards);
+  }
+  if(shownBooks.length){
+    html += booksSection(shownBooks.map(b => renderBookCard(b)).join(""));
+  }
+  html += scholarLine([pasted]);
+  resultsEl.innerHTML = html;
+  revealFilter('filterBarTitle', 'filterInputTitle', 'results', 'filterCountTitle');
+
+  const hasStrong = shown.some(x => x.sim >= HIGH);
+  if(shown.length === 0 && shownBooks.length){
+    pasteStatusLine.textContent = "No article match — showing book(s) that may contain the cited work.";
+  } else {
+    pasteStatusLine.textContent = hasStrong
+      ? "Best match shown. Confirm the title, authors, and year match your pasted citation."
+      : "Only weak matches — flagged. This may not be the work you pasted; verify carefully.";
+  }
+});
+
+// ---- Journal issue / table of contents lookup ----
+
+const tocForm = document.getElementById('tocForm');
+const tocBtn = document.getElementById('tocBtn');
+const tocStatusLine = document.getElementById('tocStatusLine');
+const tocResultsEl = document.getElementById('tocResults');
+
+async function findBestSource(journalName){
+  const url = `https://api.openalex.org/sources?search=${encodeURIComponent(journalName)}&per-page=5&mailto=citation-checker@example.com`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("OpenAlex source lookup failed");
+  const data = await res.json();
+  const results = data.results || [];
+  if(results.length === 0) return null;
+  const ranked = results
+    .map(s => ({ s, sim: similarity(s.display_name || "", journalName) }))
+    .sort((a,b) => b.sim - a.sim);
+  return ranked[0];
+}
+
+function shortOpenAlexId(fullId){
+  if(!fullId) return null;
+  const parts = fullId.split("/");
+  return parts[parts.length - 1];
+}
+
+async function fetchIssueWorks(sourceId, volume, issue){
+  let filterParts = [`locations.source.id:${sourceId}`];
+  if(volume) filterParts.push(`biblio.volume:${encodeURIComponent(volume)}`);
+  if(issue) filterParts.push(`biblio.issue:${encodeURIComponent(issue)}`);
+  const filter = filterParts.join(",");
+  const select = "id,display_name,doi,biblio,authorships,primary_location";
+
+  let all = [];
+  let cursor = "*";
+  let guard = 0; // hard stop so a huge volume can't loop forever
+  while(cursor && guard < 15){
+    const url = `https://api.openalex.org/works?filter=${filter}`
+      + `&per-page=200&cursor=${encodeURIComponent(cursor)}`
+      + `&select=${select}&mailto=citation-checker@example.com`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error("OpenAlex works lookup failed");
+    const data = await res.json();
+    all = all.concat(data.results || []);
+    cursor = data.meta && data.meta.next_cursor;
+    if(!data.results || data.results.length === 0) break;
+    guard++;
+  }
+  return all;
+}
+
+function pageLabel(biblio){
+  if(!biblio) return "—";
+  const fp = biblio.first_page, lp = biblio.last_page;
+  if(fp && lp && fp !== lp) return `${fp}–${lp}`;
+  if(fp) return `${fp}`;
+  return "—";
+}
+
+function firstPageSortKey(biblio){
+  const fp = biblio && biblio.first_page;
+  if(fp == null) return { num: Number.MAX_SAFE_INTEGER, raw: "" };
+  // Pull the first run of digits, e.g. "e1024" -> 1024, "S12" -> 12, "iv" -> none
+  const m = String(fp).match(/\d+/);
+  const num = m ? parseInt(m[0], 10) : Number.MAX_SAFE_INTEGER - 1;
+  return { num, raw: String(fp) };
+}
+
+function comparePages(a, b){
+  const ka = firstPageSortKey(a.biblio), kb = firstPageSortKey(b.biblio);
+  if(ka.num !== kb.num) return ka.num - kb.num;
+  return ka.raw.localeCompare(kb.raw);
+}
+
+function tocEntryHtml(work){
+  const title = work.display_name || "(untitled record)";
+  const link = work.doi || work.primary_location?.landing_page_url || work.id;
+  const authorsList = (work.authorships || []).map(a => a.author?.display_name).filter(Boolean);
+  const authorsText = authorsList.length
+    ? (authorsList.length > 3 ? authorsList.slice(0,3).join(", ") + " et al." : authorsList.join(", "))
+    : "";
+  const filterText = escapeAttr([title, authorsList.join(" "), pageLabel(work.biblio)].filter(Boolean).join(" "));
+  return `
+    <div class="toc-entry filter-item" data-filter-text="${filterText}">
+      <div class="page">${escapeHtml(pageLabel(work.biblio))}</div>
+      <div class="toc-main">
+        <p class="toc-title">${link ? `<a href="${link}" target="_blank" rel="noopener">${escapeHtml(title)}</a>` : escapeHtml(title)}</p>
+        ${authorsText ? `<div class="toc-authors">${escapeHtml(authorsText)}</div>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+tocForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const journal = document.getElementById('journal').value.trim();
+  const volume = document.getElementById('volume').value.trim();
+  const issue = document.getElementById('issue').value.trim();
+  if(!journal || !volume) return;
+
+  tocBtn.disabled = true;
+  tocStatusLine.textContent = "identifying journal…";
+  tocResultsEl.innerHTML = "";
+
+  let best;
+  try{
+    best = await findBestSource(journal);
+  }catch(err){
+    tocBtn.disabled = false;
+    tocStatusLine.textContent = "Journal lookup failed — check your connection.";
+    return;
+  }
+
+  if(!best || best.sim < 0.3){
+    tocBtn.disabled = false;
+    tocStatusLine.textContent = "Couldn't confidently identify that journal.";
+    tocResultsEl.innerHTML = `
+      <div class="empty-note">
+        No close match for "${escapeHtml(journal)}" in OpenAlex's journal index. Double-check spelling,
+        or try the journal's official abbreviation-free title.
+      </div>
+    `;
+    hideFilter('filterBarToc');
+    return;
+  }
+
+  tocStatusLine.textContent = `matched "${best.s.display_name}" — pulling contents…`;
+
+  let works;
+  try{
+    works = await fetchIssueWorks(shortOpenAlexId(best.s.id), volume, issue);
+  }catch(err){
+    tocBtn.disabled = false;
+    tocStatusLine.textContent = "Contents lookup failed — check your connection.";
+    return;
+  }
+
+  tocBtn.disabled = false;
+
+  if(works.length === 0){
+    tocStatusLine.textContent = "Matched the journal, but no articles indexed for that volume/issue.";
+    tocResultsEl.innerHTML = `
+      <div class="empty-note">
+        "${escapeHtml(best.s.display_name)}" was identified, but OpenAlex has no works filed under
+        Volume ${escapeHtml(volume)}${issue ? `, Issue ${escapeHtml(issue)}` : ""}. Some journals index volume/issue
+        inconsistently, or this range may predate their coverage.
+      </div>
+    `;
+    hideFilter('filterBarToc');
+    return;
+  }
+
+  works.sort(comparePages);
+
+  tocStatusLine.textContent = `${works.length} article${works.length === 1 ? "" : "s"} found.`;
+
+  const entries = works.map(tocEntryHtml).join("");
+  tocResultsEl.innerHTML = journalInterpGuide() + `
+    <div class="toc-card">
+      <h2>${escapeHtml(best.s.display_name)}</h2>
+      <div class="toc-sub">Volume ${escapeHtml(volume)}${issue ? ` · Issue ${escapeHtml(issue)}` : ""} — ${works.length} indexed article${works.length === 1 ? "" : "s"}</div>
+      ${entries}
+    </div>
+  ` + scholarLine([best.s.display_name, "volume " + volume, issue ? "issue " + issue : ""]);
+  revealFilter('filterBarToc', 'filterInputToc', 'tocResults', 'filterCountToc');
+});
+
+// ---- Dedicated book search ----
+
+async function queryOpenLibraryIsbn(isbn){
+  const url = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(isbn)}&limit=5`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("Open Library ISBN request failed");
+  const data = await res.json();
+  return data.docs || [];
+}
+
+function bookInterpGuide(){
+  return `
+    <div class="interp-guide">
+      <h3>How to read these results</h3>
+      <div class="g-row"><span class="g-term">Source tag</span><span>The index that returned this record — Google Books or Open Library.</span></div>
+      <div class="g-row"><span class="g-term">Type / publisher / year</span><span>The volume's details. Compare the editors, publisher, and year against the citation.</span></div>
+      <div class="g-row"><span class="g-term">Match</span><span>"Matched by ISBN" means an exact identifier hit. Otherwise a title-overlap percentage is shown — a signal, not proof.</span></div>
+      <div class="g-row"><span class="g-term">Weak match flag</span><span>Shown in red when a title search fell below the confidence bar. Verify it by hand.</span></div>
+      <div class="g-row"><span class="g-term">Scope</span><span>This confirms the book exists. It does not confirm an individual chapter, its author, or its page range within the book.</span></div>
+    </div>
+  `;
+}
+
+function bookFallbackCard(title, author, isbn){
+  const q = encodeURIComponent([title, author, isbn].filter(Boolean).join(" "));
+  const url = `https://scholar.google.com/scholar?q=${q}`;
+  return `
+    <div class="empty-note">
+      No matching book was found in Google Books or Open Library. It may be an older or niche volume, or the
+      details may differ from how it is cataloged. Remember this would confirm the book, not an individual chapter.<br><br>
+      Try a broader search: <a href="${url}" target="_blank" rel="noopener">${url}</a>
+    </div>
+  `;
+}
+
+function doiFallbackCard(doi){
+  const url = `https://scholar.google.com/scholar?q=${encodeURIComponent(doi)}`;
+  return `
+    <div class="empty-note">
+      The DOI <strong>${escapeHtml(doi)}</strong> did not resolve in CrossRef or OpenAlex. Check it for typos —
+      but a DOI that doesn't resolve does not mean the resource does not exist. It may contain an error, be too
+      new to be indexed, or come from a registry these sources don't cover; the work itself may still be real.<br><br>
+      Try searching by title instead, or look it up directly: <a href="${url}" target="_blank" rel="noopener">${url}</a>
+    </div>
+  `;
+}
+
+const bookForm = document.getElementById('bookForm');
+const bookBtn = document.getElementById('bookBtn');
+const bookStatusLine = document.getElementById('bookStatusLine');
+const bookResultsEl = document.getElementById('bookResults');
+
+bookForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const bTitle = document.getElementById('bookTitle').value.trim();
+  const bAuthor = document.getElementById('bookAuthor').value.trim();
+  const bIsbn = document.getElementById('bookIsbn').value.trim().replace(/[-\s]/g, "");
+  if(!bTitle && !bIsbn){
+    bookStatusLine.textContent = "Enter a book title or an ISBN.";
+    return;
+  }
+
+  const HIGH = 0.6, MIN = 0.35;
+  bookBtn.disabled = true;
+  bookResultsEl.innerHTML = "";
+
+  let records = [];
+  let exactIsbn = false;
+
+  // 1) ISBN-exact lookup first, if given (near-exact — the book equivalent of a DOI)
+  if(bIsbn){
+    bookStatusLine.textContent = "looking up ISBN…";
+    const [gbR, olR] = await Promise.allSettled([
+      queryGoogleBooks("isbn:" + bIsbn),
+      queryOpenLibraryIsbn(bIsbn)
+    ]);
+    if(gbR.status === "fulfilled") records.push(...gbR.value.map(normGoogleBooks));
+    if(olR.status === "fulfilled") records.push(...olR.value.map(normOpenLibrary));
+    if(records.length) exactIsbn = true;
+  }
+
+  // 2) Title/author search — also run when no ISBN, or ISBN returned nothing
+  if(bTitle && (!exactIsbn || records.length === 0)){
+    bookStatusLine.textContent = "searching book indexes…";
+    const q = [bTitle, bAuthor].filter(Boolean).join(" ");
+    const [gbR, olR] = await Promise.allSettled([
+      queryGoogleBooks(q),
+      queryOpenLibrary(q)
+    ]);
+    if(gbR.status === "fulfilled") records.push(...gbR.value.map(normGoogleBooks));
+    if(olR.status === "fulfilled") records.push(...olR.value.map(normOpenLibrary));
+  }
+
+  bookBtn.disabled = false;
+
+  if(records.length === 0){
+    bookResultsEl.innerHTML = bookFallbackCard(bTitle, bAuthor, bIsbn);
+    bookStatusLine.textContent = "No book found in Google Books or Open Library.";
+    hideFilter('filterBarBook');
+    return;
+  }
+
+  // 3) Score: exact ISBN hits are certain; otherwise title-overlap against what was entered
+  const scoreOf = (r) => {
+    if(exactIsbn) return 1.0;
+    if(!bTitle) return 1.0;
+    return similarity(r.title || "", bTitle);
+  };
+  let scored = records
+    .map(r => ({ r, sim: scoreOf(r) }))
+    .filter(x => exactIsbn || x.sim >= MIN)
+    .sort((a,b) => b.sim - a.sim);
+
+  // dedupe by normalized title + year
+  const seen = new Set();
+  const deduped = [];
+  for(const x of scored){
+    const key = normalize(x.r.title) + "|" + (x.r.year || "");
+    if(seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(x);
+  }
+  const shown = deduped.slice(0, 25);
+
+  if(shown.length === 0){
+    bookResultsEl.innerHTML = bookFallbackCard(bTitle, bAuthor, bIsbn);
+    bookStatusLine.textContent = "No confident book match.";
+    hideFilter('filterBarBook');
+    return;
+  }
+
+  const bookCards = shown.map((x, i) => renderBookCard(x.r, {
+    exact: exactIsbn,
+    sim: exactIsbn ? null : x.sim,
+    weak: !exactIsbn && x.sim < HIGH,
+    lowerRanked: i >= SEE_MORE_INITIAL
+  }));
+  bookResultsEl.innerHTML = bookInterpGuide()
+    + renderWithSeeMore(bookCards)
+    + scholarLine([bTitle, bAuthor, bIsbn].filter(Boolean));
+  revealFilter('filterBarBook', 'filterInputBook', 'bookResults', 'filterCountBook');
+
+  if(exactIsbn){
+    bookStatusLine.textContent = "Matched by ISBN. Confirm the volume is the one cited.";
+  } else {
+    const hasStrong = shown.some(x => x.sim >= HIGH);
+    bookStatusLine.textContent = hasStrong
+      ? "Book match shown. Confirm the editors, publisher, and year against the citation."
+      : "Only weak matches — flagged. Verify carefully; this may not be the cited volume.";
+  }
+});
+</script>
+</body>
+</html>
